@@ -1,48 +1,37 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Created on Thu Dec 04 15:26:19 2014
 
-This is a temporary script file.
+@author: Administrator
 """
 
 import numpy as np
 import scipy as sp
 
-def gen_ajacent_from_txt(file,user_size=0,item_size=0):
-    data=np.genfromtxt(file)
-    if user_size==0 or item_size==0:
-        u_set=set()
-        i_set=set()
-        for i in range(data.shape[0]):
-            u_set.add(data[i,0])
-            i_set.add(data[i,1])
-        user_size=len(u_set)
-        item_size=len(i_set)
-        del u_set
-        del i_set
-    mat = sp.sparse.lil_matrix((user_size,item_size))
-    for i in range(data.shape[0]):
-        mat[data[i,0]-1,data[i,1]-1]=data[i,2]
-    del data
-    return mat
+def gen_ajacent_from_txt(file,sep=None):
+    data=np.genfromtxt(file,delimiter=sep)
+    mat = sp.sparse.coo_matrix((data[:,2],(data[:,0]-1,data[:,1]-1)))
+    return mat.tocsr()
     
+def calcu_cosine_similarity(A):
+    similarity = np.dot(A, A.T)
+    square_mag = np.diag(similarity)
+
+    # inverse squared magnitude
+    inv_square_mag = 1 / square_mag
     
-def gen_cosie_simialrity(mat,normalization=False):
-    sim_mat=np.zeros((mat.shape[0],mat.shape[0]))
-    for i in range(mat.shape[0]):
-        print i
-        for j in range(i+1,mat.shape[0]):
-#            a=np.array(mat[i,:].todense())
-#            b=np.array(mat[j,:].todense())
-            a=mat[i,:]
-            b=mat[j,:]
-            cos = np.dot(a,b.T)/np.linalg.norm(a)/np.linalg.norm(b)
-            if normalization:
-                cos=0.5+0.5*cos
-            sim_mat[i,j]=sim_mat[j,i]=cos
-    return sim_mat
+    # if it doesn't occur, set it's inverse magnitude to zero (instead of inf)
+    inv_square_mag[np.isinf(inv_square_mag)] = 0
+    
+    # inverse of the magnitude
+    inv_mag = np.sqrt(inv_square_mag)
+    
+    # cosine similarity (elementwise multiply by inverse magnitudes)
+    cosine = similarity * inv_mag
+    cosine = cosine.T * inv_mag
+    return cosine
     
 if __name__=='__main__':
-    file = 'G:\\projects_lwj\\data\\movielens-100k\\rel.rating'
-    mat = gen_ajacent_from_txt(file,943,1682)
-    sim = gen_cosie_simialrity(np.array(mat.todense()))
+    file = 'G:\\projects_lwj\\data\\ml-1m\\ratings.dat'
+    mat=gen_ajacent_from_txt(file,'::')
+    cos=calcu_cosine_similarity(mat.toarray())
