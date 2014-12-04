@@ -29,9 +29,18 @@ def calcu_cosine_similarity(A):
     # cosine similarity (elementwise multiply by inverse magnitudes)
     cosine = similarity * inv_mag
     cosine = cosine.T * inv_mag
+    cosine-=np.diag(np.diag(cosine))
+
     return cosine
+    
+def predict_rate(A,sim):
+    ids=np.argsort(-sim)
+#    for i in range(A.shape[0]):
+#        neighbors=ids
+    return
     
 if __name__=='__main__':
     file = 'G:\\projects_lwj\\data\\ml-1m\\ratings.dat'
     mat=gen_ajacent_from_txt(file,'::')
     cos=calcu_cosine_similarity(mat.toarray())
+    predict_rate(mat,cos)
