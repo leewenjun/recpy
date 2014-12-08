@@ -14,12 +14,10 @@ def gen_ajacent_from_txt(file,sep=None):
 def nbi(mat):
     sum_u = np.sum(mat,axis=1,keepdims=True)
     sum_o = np.sum(mat,axis=0,keepdims=True)
-    
     tmp=mat/sum_u
-    
     t=np.dot(tmp.T,mat)/sum_o
-    
     p=np.dot(mat,t)
+    return p
     
 if __name__=='__main__':
     file = 'G:\\projects_lwj\\data\\ml-1m\\ratings.dat'
