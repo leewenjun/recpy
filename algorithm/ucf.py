@@ -33,14 +33,41 @@ def calcu_cosine_similarity(A):
 
     return cosine
     
-def predict_rate(A,sim):
+def predict_rate(A,sim,topk=10):
+    pre_matrix=np.zeros(A.shape)
     ids=np.argsort(-sim)
-#    for i in range(A.shape[0]):
-#        neighbors=ids
-    return
+    for i in range(A.shape[0]):
+        neighbors=ids[i,0:topk]
+        sims=sim[i,neighbors]
+        rates=A[neighbors,:]
+        k=1.0/np.sum(np.abs(sims))
+        predicts=k*np.dot(sims,rates)
+        pre_matrix[i,:]=predicts
+    return pre_matrix 
+    
+    
+def predict_rate_avg(A,sim,topk=10):
+    pre_matrix=np.zeros(A.shape)
+    ids=np.argsort(-sim)
+    
+    avgs=np.sum(A,axis=1,keepdims=True)/np.sum(A>0,axis=1,keepdims=True)
+    B = A-avgs
+    B[A==0]=0
+    
+    for i in range(A.shape[0]):
+        neighbors=ids[i,0:topk]
+        sims=sim[i,neighbors]
+        rates=B[neighbors,:]
+        k=1.0/np.sum(np.abs(sims))
+        predicts=avgs[i]+k*np.dot(sims,rates)
+        pre_matrix[i,:]=predicts
+    return pre_matrix
     
 if __name__=='__main__':
-    file = 'G:\\projects_lwj\\data\\ml-1m\\ratings.dat'
-    mat=gen_ajacent_from_txt(file,'::')
+#    file = '/Users/liwenjun/projects/data/ml-1m/ratings.dat'
+#    mat=gen_ajacent_from_txt(file,'::')
+    file = '/Users/liwenjun/projects/data/test.txt'
+    mat=gen_ajacent_from_txt(file,'\t')
+
     cos=calcu_cosine_similarity(mat.toarray())
-    predict_rate(mat,cos)
+    p=predict_rate_avg(mat.toarray(),cos,topk=3)
