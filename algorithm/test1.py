@@ -12,9 +12,10 @@ def gen_ajacent_from_txt(file,sep=None,start_index=0):
     data=np.genfromtxt(file,delimiter=sep)
     tmp=np.ones((data.shape[0],))
     mat = sp.sparse.coo_matrix((tmp,(data[:,0]-start_index,data[:,1]-start_index)))
-    mat_new=sp.sparse.lil_matrix((mat.shape[0]+1,mat.shape[1]))
-    mat_new[0:mat.shape[0],:]=mat
+    mat_new=sp.sparse.lil_matrix((mat.shape[0]+1,mat.shape[1]+1))
+    mat_new[0:mat.shape[0],0:mat.shape[1]]=mat
     mat_new[mat.shape[0]:,:]=1
+    mat_new[:,mat.shape[1]]=1
     return mat_new.toarray()
     
 def test1(mat):
@@ -29,6 +30,7 @@ def test1(mat):
     return p    
     
 if __name__=='__main__':
-    file = r'/Volumes/GRMCULXFRER/ml-1m/train.txt'
+#    file = r'/Volumes/GRMCULXFRER/ml-1m/train.txt'
+    file= r'G:\projects_lwj\data\ml-1m\train.txt'
     mat = gen_ajacent_from_txt(file)
     prediction = test1(mat)

@@ -24,7 +24,8 @@ def nbi(mat):
     return p
     
 if __name__=='__main__':
-    file = r'/Volumes/GRMCULXFRER/ml-1m/train.txt'
+#    file = r'/Volumes/GRMCULXFRER/ml-1m/train.txt'
+    file= r'G:\projects_lwj\data\ml-1m\train.txt'
     mat = gen_ajacent_from_txt(file)
     prediction = nbi(mat)
 #    print p

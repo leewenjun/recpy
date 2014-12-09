@@ -38,6 +38,7 @@ def load_test(test_file):
     return test
      
 if __name__=='__main__':
-    test_file=r'/Volumes/GRMCULXFRER/ml-1m/test.txt'
+#    test_file=r'/Volumes/GRMCULXFRER/ml-1m/test.txt'
+    test_file= r'G:\projects_lwj\data\ml-1m\test.txt'
     t=load_test(test_file)
     precision,recall,f1=precision(prediction,t)
