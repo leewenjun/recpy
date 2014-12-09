@@ -10,15 +10,19 @@ def precision(predition,test,l=10):
     m,k=top_idxs.shape
     recall=0.
     precision=0.
+    num=0
     for i in test.keys():
+        if np.all(predition[i,:]==0.):
+            continue
         p=top_idxs[i,0:l].tolist()
+        num+=1
         t=test[i]
         s=len(set(p).intersection(t))
         precision+=float(s)/l
         recall+=float(s)/len(t)
-    precision/=len(test)
-    recall/=len(test)
-    f1=recall*precision/(precision+recall)
+    precision/=num
+    recall/=num
+    f1=2*recall*precision/(precision+recall)
     return precision,recall,f1
     
 def load_test(test_file):
@@ -34,6 +38,6 @@ def load_test(test_file):
     return test
      
 if __name__=='__main__':
-    test_file=r'G:\projects_lwj\data\ml-1m\test.txt'
+    test_file=r'/Volumes/GRMCULXFRER/ml-1m/test.txt'
     t=load_test(test_file)
-    precision,recall,f1=precision(predition,t)
+    precision,recall,f1=precision(prediction,t)
